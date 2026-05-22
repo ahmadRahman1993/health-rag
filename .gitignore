@@ -1,0 +1,4 @@
+.venv
+data/raw/*
+.env
+mnt/user-data/outputs/health-rag/

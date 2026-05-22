@@ -25,4 +25,4 @@ once the pipeline works end to end.
 Embedding ~47k pairs with OpenAI is inexpensive but not free. Develop on a
 few hundred records, only embed the full set once the pipeline is stable.
 
-Raw data is gitignored — never commit the corpus.
+Raw data is gitignored.
