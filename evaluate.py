@@ -8,6 +8,10 @@ from pathlib import Path
 import json
 from query import answer
 from collections import defaultdict
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
+import re
 
 @dataclass
 class EvalCase:
@@ -132,8 +136,48 @@ def score_response(expected: str, got: str) -> float:
 
     return hits / total if total > 0 else 0.0
 
-    
 
+
+def _parse_score(text: str) -> float:
+    text = text.strip()
+    try:
+        return max(0.0, min(1.0, float(text.split()[0])))
+    except (ValueError, IndexError):
+        match = re.search(r"\b(1\.0|0\.\d+|1|0)\b", text)
+        if match:
+            return max(0.0, min(1.0, float(match.group())))
+        return 0.0
+
+def score_response_llm(question: str, expected: str, got: str) -> float:
+    """
+    Score a single response in [0, 1] using an LLM.
+    """
+    if not expected.strip():
+        return 0.0
+    
+    load_dotenv()
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    prompt = f"""You are grading answers from a medical Q&A retrieval system.
+    Question: {question}
+    Expected key facts: {expected}
+    Model answer: {got}
+    Rate how well the model answer covers the expected key facts.
+    - Accept paraphrases and synonyms.
+    - If expected facts indicate refusal (e.g. "does not contain"), score 1.0 if the model appropriately refuses.
+    - Return ONLY a number between 0.0 and 1.0.
+    """
+
+    response = llm.invoke([
+        HumanMessage(content=prompt),
+    ])
+
+    return _parse_score(response.content)
+
+def llm_score_fn(case: EvalCase, got: str) -> float:
+    return score_response_llm(case.question,case.expected, got)
+
+def keyword_score_fn(case: EvalCase, got: str) -> float:
+    return score_response(case.expected, got)
 
 def run_eval(answer_fn, index_path) -> dict:
     """
@@ -150,27 +194,39 @@ def run_eval(answer_fn, index_path) -> dict:
         elapsed = (time.perf_counter() - start) * 1000
 
         got = result["answer"]
-        score = score_response(case.expected, got)
+        keyword_score = keyword_score_fn(case, got)
+        llm_score = llm_score_fn(case, got)
 
         latencies_ms.append(elapsed)
 
         rows.append({
             "question": case.question,
             "category": case.category,
-            "score": score,
+            "keyword_score": keyword_score,
+            "llm_score": llm_score,
             "latency_ms": elapsed,
             "answer_preview": got[:120]
         })
 
-    overall_accuracy = sum(row["score"] for row in rows) / len(rows)
+    overall_accuracy = {
+        "keyword": sum(row["keyword_score"] for row in rows) / len(rows),
+        "llm": sum(row["llm_score"] for row in rows) / len(rows)
+    }
 
 
-    by_category: dict[str, list[float]] = defaultdict(list)
+    by_category: dict[str, dict[str, list[float]]] = defaultdict(
+        lambda: {"keyword": [], "llm": []}
+    )
+
     for row in rows:
-            by_category[row["category"]].append(row["score"])
+            by_category[row["category"]]["keyword"].append(row["keyword_score"])
+            by_category[row["category"]]["llm"].append(row["llm_score"])
             
     category_accuracy = {
-            cat: sum(scores) / len(scores)
+            cat: {
+                "keyword": sum(scores["keyword"]) / len(scores["keyword"]),
+                "llm": sum(scores["llm"]) / len(scores["llm"])
+            }
             for cat, scores in by_category.items()
     }
 
