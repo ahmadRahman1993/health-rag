@@ -1,37 +1,41 @@
 # health-rag
 
-A retrieval-augmented generation (RAG) system over a public medical Q&A corpus, with a built-in evaluation harness.
+A retrieval-augmented generation (RAG) system over a medical Q&A corpus, with a scenario-based evaluation harness.
 
-This project explores a question from production health AI work: how do retrieval strategy and chunking choices affect answer quality in a domain where wrong answers are costly? It pairs a working RAG pipeline with a scenario-based evaluation harness rather than treating evaluation as an afterthought.
+This project asks a question that matters in production health AI: **how do retrieval and chunking choices affect answer quality when wrong answers are costly?** It pairs a working RAG pipeline with measurable evaluation rather than treating quality as an afterthought.
 
-## Why this exists
+## What it does
 
-Most RAG demos stop at "it returns an answer." In regulated domains the harder question is "how do you know the answer is good, and how do you measure a change?" This repo treats evaluation as a first-class component, drawing on a published scenario-based evaluation methodology for a domain-constrained clinical assistant.
+- **Ingests** MedQuAD-style XML Q&A pairs with two chunking strategies (QA-pair vs fixed-size)
+- **Indexes** chunks with OpenAI embeddings into a local FAISS store
+- **Answers** questions with grounded generation (`gpt-4o-mini`), using only retrieved context
+- **Evaluates** a 15-case golden set (factual, multi-source, edge/refusal) with keyword and LLM-as-judge scoring
+- **Compares** retrieval strategies: plain similarity, MMR, and Cohere rerank
 
 ## Architecture
 
 ```
                   ┌──────────────┐
-   medical Q&A ──▶ │  ingestion   │  document-aware chunking
+   medical Q&A ──▶ │  ingestion   │  QA-pair + fixed-size chunking
    corpus          │  + chunking  │
                   └──────┬───────┘
                          │ chunks
                          ▼
                   ┌──────────────┐
-                  │  embedding   │  OpenAI embeddings
-                  │  + vectorDB  │  vector store + similarity search
+                  │  embedding   │  OpenAI text-embedding-3-small
+                  │  + FAISS     │
                   └──────┬───────┘
-                         │ retriever
+                         │ retriever (similarity / MMR / rerank)
                          ▼
                   ┌──────────────┐
-   user query ──▶ │  retrieval   │  top-k retrieval
-                  │  + generation│  context construction + LLM answer
+   user query ──▶ │  retrieval   │  top-k + optional reranking
+                  │  + generation│  context + LLM answer
                   └──────┬───────┘
                          │ answers
                          ▼
                   ┌──────────────┐
-                  │  evaluation  │  scenario scoring vs. expected
-                  │  harness     │  accuracy + latency
+                  │  evaluation  │  golden set, dual scoring, latency
+                  │  harness     │
                   └──────────────┘
 ```
 
@@ -39,31 +43,120 @@ Most RAG demos stop at "it returns an answer." In regulated domains the harder q
 
 - Python 3.11+
 - LangChain (orchestration)
-- OpenAI API (embeddings + generation)
-- A local vector store (FAISS to start; pgvector swap documented later)
-- A public medical Q&A dataset (MedQuAD or similar, see `data/README.md`)
+- OpenAI API (embeddings + generation + eval judge)
+- Cohere API (reranking)
+- FAISS (local vector store)
+- MedQuAD subset — 5 leukemia XML files under `data/raw/1_CancerGov_QA/` (~38 Q&A pairs)
 
-## Status
+## Project layout
 
-Work in progress. Built in public over one week. See commit history.
+```
+health-rag/
+  ingest.py                  # load corpus, chunking strategies
+  index.py                   # embed + build/load FAISS
+  query.py                   # retrieve, rerank, answer
+  evaluate.py                # golden set + run_eval()
+  run_retrieval_comparison.py
+  test_*.py                  # pytest suite
+  data/raw/                  # MedQuAD XML (not committed; see Setup)
+  index/faiss_qa/            # built index (not committed)
+  results/                   # eval reports (not committed)
+```
 
 ## Setup
 
 ```bash
-python -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env   # add your OPENAI_API_KEY
+
+pip install langchain langchain-openai langchain-community langchain-cohere \
+            langchain-text-splitters faiss-cpu openai cohere python-dotenv pytest
+
+Create `.env` in the project root:
+
 ```
+OPENAI_API_KEY=...
+COHERE_API_KEY=...       # required for reranking
+```
+
+Place MedQuAD XML files under `data/raw/` (e.g. clone [MedQuAD](https://github.com/abachaa/MedQuAD) and copy a subset folder).
 
 ## Usage
 
+Build the pipeline:
+
 ```bash
-python -m src.ingest        # load + chunk the corpus
-python -m src.index         # embed + build the vector store
-python -m src.query "What are the symptoms of iron deficiency anemia?"
-python -m src.evaluate      # run the evaluation harness
+python index.py          # load corpus, chunk (qa_pair), embed, save FAISS
 ```
+
+Query:
+
+```bash
+python query.py "What are the symptoms of Adult Acute Lymphoblastic Leukemia?"
+```
+
+Run evaluation (15 golden-set cases; saves `results/report.json`):
+
+```bash
+python evaluate.py
+```
+
+Compare retrieval strategies (plain / MMR / Cohere rerank at k=4):
+
+```bash
+python run_retrieval_comparison.py
+python run_retrieval_comparison.py --only rerank
+```
+
+Run tests:
+
+```bash
+pytest -v
+```
+
+### Retrieval options in code
+
+```python
+from functools import partial
+from query import answer
+
+answer(q, index_path)                              # plain similarity (default k=2)
+answer(q, index_path, k=4)                         # plain, k=4
+answer(q, index_path, k=4, use_mmr=True)           # Max Marginal Relevance
+answer(q, index_path, k=4, use_rerank=True)       # Cohere rerank
+```
+
+## Evaluation results
+
+On the 15-case golden set (k=4), comparing retrieval strategies:
+
+| Strategy | Keyword accuracy | LLM judge | p50 latency |
+|----------|------------------|-----------|-------------|
+| Plain similarity | 0.873 | 0.980 | ~2.5s |
+| MMR | 0.758 | 0.907 | ~2.3s |
+| **Cohere rerank** | 0.863 | **0.987** | ~3.0s |
+
+**Findings:**
+
+- **Plain similarity** is a strong baseline on this small leukemia corpus.
+- **MMR** hurt multi-source cases by diversifying across similar diseases (ALL vs AML vs CLL) instead of keeping related chunks from one condition.
+- **Cohere rerank** gave the best LLM-judged quality (0.987), improving multi-source answers without MMR's cross-disease problem, at the cost of one extra API call per query.
+
+Reports are saved under `results/` (e.g. `report_retrieve_k4.json`, `report_mmr_k4.json`, `report_rerank_k4.json`).
+
+## Golden set categories
+
+| Category | Count | What it tests |
+|----------|-------|---------------|
+| `factual` | 8 | Single-chunk lookup from corpus |
+| `multi-source` | 4 | Combining info from 2+ chunks |
+| `edge` | 3 | Questions outside corpus — should refuse |
+
+Scoring uses both **keyword overlap** (fast, deterministic) and **LLM-as-judge** (handles paraphrases).
+
+## Status
+
+Complete mini-project: ingest → index → query → evaluate, with retrieval strategy comparison and test coverage.
 
 ## License
 
