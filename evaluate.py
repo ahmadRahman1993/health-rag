@@ -2,16 +2,21 @@
 Evaluation harness
 """
 
+import json
+import re
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-import json
-from query import answer
-from collections import defaultdict
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage
+
 from dotenv import load_dotenv
-import re
+
+load_dotenv()
+
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+
+from query import answer
 
 @dataclass
 class EvalCase:
@@ -155,7 +160,6 @@ def score_response_llm(question: str, expected: str, got: str) -> float:
     if not expected.strip():
         return 0.0
     
-    load_dotenv()
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
     prompt = f"""You are grading answers from a medical Q&A retrieval system.
     Question: {question}
