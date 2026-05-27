@@ -1,0 +1,56 @@
+{
+    "overall_accuracy": {
+        "keyword": 0.9777777777777779,
+        "llm": 1.0
+    },
+    "category_accuracy": {
+        "factual": {
+            "keyword": 0.9777777777777779,
+            "llm": 1.0
+        }
+    },
+    "p50_latency_ms": 2451.687749940902,
+    "p95_latency_ms": 3691.3185419980437,
+    "rows": [
+        {
+            "question": "What are the symptoms of Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 0.8888888888888888,
+            "llm_score": 1.0,
+            "latency_ms": 3838.718540966511,
+            "answer_preview": "The symptoms of Adult Acute Lymphoblastic Leukemia (ALL) include:\n\n- Weakness or feeling tired\n- Fever or night sweats\n-"
+        },
+        {
+            "question": "What is Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2451.687749940902,
+            "answer_preview": "Adult acute lymphoblastic leukemia (ALL) is a type of cancer in which the bone marrow makes too many lymphocytes (a type"
+        },
+        {
+            "question": "How to diagnose Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 3691.3185419980437,
+            "answer_preview": "To diagnose Adult Acute Lymphoblastic Leukemia (ALL), the following tests and procedures may be used:\n\n- **Physical exam"
+        },
+        {
+            "question": "Who is at risk for Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 1741.7044159956276,
+            "answer_preview": "Previous chemotherapy and exposure to radiation may increase the risk of developing Adult Acute Lymphoblastic Leukemia ("
+        },
+        {
+            "question": "What are the symptoms of Adult Acute Myeloid Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2397.4949999246746,
+            "answer_preview": "Signs and symptoms of adult Acute Myeloid Leukemia (AML) include fever, feeling tired, and easy bruising or bleeding. Th"
+        }
+    ]
+}

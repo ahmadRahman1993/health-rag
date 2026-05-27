@@ -1,0 +1,144 @@
+{
+    "overall_accuracy": {
+        "keyword": 0.8459259259259259,
+        "llm": 0.9866666666666667
+    },
+    "category_accuracy": {
+        "factual": {
+            "keyword": 0.9861111111111112,
+            "llm": 1.0
+        },
+        "multi-source": {
+            "keyword": 1.0,
+            "llm": 0.95
+        },
+        "edge": {
+            "keyword": 0.26666666666666666,
+            "llm": 1.0
+        }
+    },
+    "p50_latency_ms": 2651.148958131671,
+    "p95_latency_ms": 5213.746250141412,
+    "rows": [
+        {
+            "question": "What are the symptoms of Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 0.8888888888888888,
+            "llm_score": 1.0,
+            "latency_ms": 3697.7849169634283,
+            "answer_preview": "The symptoms of adult acute lymphoblastic leukemia (ALL) include:\n\n- Weakness or feeling tired\n- Fever or night sweats\n-"
+        },
+        {
+            "question": "What is Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2361.9761660229415,
+            "answer_preview": "Adult acute lymphoblastic leukemia (ALL) is a type of cancer in which the bone marrow makes too many lymphocytes (a type"
+        },
+        {
+            "question": "How to diagnose Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 5213.746250141412,
+            "answer_preview": "Tests that examine the blood and bone marrow are used to detect and diagnose adult Acute Lymphoblastic Leukemia (ALL). T"
+        },
+        {
+            "question": "Who is at risk for Adult Acute Lymphoblastic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 3759.303333936259,
+            "answer_preview": "Previous chemotherapy and exposure to radiation may increase the risk of developing Adult Acute Lymphoblastic Leukemia ("
+        },
+        {
+            "question": "What are the symptoms of Adult Acute Myeloid Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2651.148958131671,
+            "answer_preview": "Signs and symptoms of adult AML include fever, feeling tired, and easy bruising or bleeding. The early signs and symptom"
+        },
+        {
+            "question": "What are the symptoms of Chronic Lymphocytic Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2647.9239999316633,
+            "answer_preview": "Signs and symptoms of chronic lymphocytic leukemia include swollen lymph nodes and tiredness. Usually, CLL does not caus"
+        },
+        {
+            "question": "What are the genetic changes related to Chronic Myelogenous Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 1784.2757091857493,
+            "answer_preview": "Most people with CML have a gene mutation called the Philadelphia chromosome. This involves part of the DNA from one chr"
+        },
+        {
+            "question": "What are the symptoms of Hairy Cell Leukemia?",
+            "category": "factual",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2872.092416975647,
+            "answer_preview": "Signs and symptoms of hairy cell leukemia include infections, tiredness, and pain below the ribs. Other symptoms may inc"
+        },
+        {
+            "question": "What are the symptoms and treatments for Adult Acute Lymphoblastic Leukemia?",
+            "category": "multi-source",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 8045.70583300665,
+            "answer_preview": "Symptoms of adult acute lymphoblastic leukemia (ALL) include:\n\n- Weakness or feeling tired\n- Fever or night sweats\n- Eas"
+        },
+        {
+            "question": "What are the symptoms of Chronic Myelogenous Leukemia and what genetic change is associated with it?",
+            "category": "multi-source",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 2099.846208933741,
+            "answer_preview": "Signs and symptoms of chronic myelogenous leukemia (CML) include fever, night sweats, and tiredness. Most people with CM"
+        },
+        {
+            "question": "How is Hairy Cell Leukemia diagnosed and what treatments are used?",
+            "category": "multi-source",
+            "keyword_score": 1.0,
+            "llm_score": 0.8,
+            "latency_ms": 3143.4024998452514,
+            "answer_preview": "Hairy cell leukemia is diagnosed using tests that examine the blood and bone marrow, including:\n\n- Physical exam and his"
+        },
+        {
+            "question": "What is Chronic Lymphocytic Leukemia and who is at risk for it?",
+            "category": "multi-source",
+            "keyword_score": 1.0,
+            "llm_score": 1.0,
+            "latency_ms": 3142.679707845673,
+            "answer_preview": "Chronic lymphocytic leukemia (CLL) is a type of cancer in which the bone marrow makes too many lymphocytes, a type of wh"
+        },
+        {
+            "question": "What is photosynthesis?",
+            "category": "edge",
+            "keyword_score": 0.2,
+            "llm_score": 1.0,
+            "latency_ms": 1240.7895000651479,
+            "answer_preview": "The context does not contain information about photosynthesis."
+        },
+        {
+            "question": "What are the symptoms of canine parvovirus in dogs?",
+            "category": "edge",
+            "keyword_score": 0.2,
+            "llm_score": 1.0,
+            "latency_ms": 1363.2298749871552,
+            "answer_preview": "The context does not contain information about the symptoms of canine parvovirus in dogs."
+        },
+        {
+            "question": "What is the standard dosing of lecanemab for early Alzheimer's disease?",
+            "category": "edge",
+            "keyword_score": 0.4,
+            "llm_score": 1.0,
+            "latency_ms": 1052.5541249662638,
+            "answer_preview": "The provided context does not contain information about the standard dosing of lecanemab for early Alzheimer's disease."
+        }
+    ]
+}
