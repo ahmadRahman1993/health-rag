@@ -188,7 +188,8 @@ def run_eval(answer_fn, index_path) -> dict:
     rows = []
     latencies_ms = []
 
-    for case in GOLDEN_SET[:5]:
+    for i, case in enumerate(GOLDEN_SET, start=1):
+        print(f"[{i}/{len(GOLDEN_SET)}] {case.category}: {case.question[:60]}...")
         start = time.perf_counter()
         result = answer_fn(case.question, index_path)
         elapsed = (time.perf_counter() - start) * 1000
