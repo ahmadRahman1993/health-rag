@@ -4,5 +4,4 @@ data/raw/*
 mnt/user-data/outputs/health-rag/
 index
 __pycache__
-results/
 .gitignore
