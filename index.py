@@ -1,15 +1,19 @@
 from pathlib import Path
+
 from dotenv import load_dotenv
+
+load_dotenv()
+
+from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import FAISS
+
 from ingest import Chunk
 
 def build_index(chunks, index_path: Path):
     """
     Embed chunks and persist a FAISS vector store.
     """
-    load_dotenv()
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     documents  = []
     for chunk in chunks:
@@ -34,7 +38,6 @@ def load_index(index_path: Path):
     """
     Load a previously persisted FAISS store.
     """
-    load_dotenv()
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     vectorstore = FAISS.load_local(
         str(index_path),
