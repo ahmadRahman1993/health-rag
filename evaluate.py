@@ -104,22 +104,20 @@ GOLDEN_SET: list[EvalCase] = [
     # --- edge (NOT in corpus — should refuse) ---
 
     EvalCase(
-        question="What is type 2 diabetes?",
-        expected="does not contain, insufficient, not enough information, cannot answer, provided context",
-        category="edge",
+        question="What is photosynthesis?",
+    expected="does not contain, insufficient, not enough information, cannot answer, provided context",
+    category="edge",
     ),
-
     EvalCase(
-        question="What are the symptoms of iron deficiency anemia?",
+        question="What are the symptoms of canine parvovirus in dogs?",
         expected="does not contain, insufficient, not enough information, cannot answer, provided context",
         category="edge",
     ),
-
     EvalCase(
-        question="What are the treatments for breast cancer?",
+        question="What is the standard dosing of lecanemab for early Alzheimer's disease?",
         expected="does not contain, insufficient, not enough information, cannot answer, provided context",
         category="edge",
-    ),
+),
 ]
 
 
